@@ -18,11 +18,9 @@ import java.util.Optional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
-    private final ProductRepository productRepository;
 
-    public MemberService(MemberRepository repository, ProductRepository productRepository) {
+    public MemberService(MemberRepository repository) {
         this.memberRepository = repository;
-        this.productRepository = productRepository;
     }
 
     public CreateMemberResponse register(CreateMemberRequest request) {
@@ -43,10 +41,6 @@ public class MemberService {
         if (!member.getPassword().equals(requestPassword)) {
             throw new NotMatchPasswordException("비밀번호가 일치하지 않습니다.");
         }
-    }
-
-    public List<Product> productList() {
-        return productRepository.findAll();
     }
 
     public List<Member> memberList() {

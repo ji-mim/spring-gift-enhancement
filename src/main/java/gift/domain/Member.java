@@ -1,17 +1,31 @@
 package gift.domain;
 
+import jakarta.persistence.*;
+
+@Entity
 public class Member {
 
-    private final Long id;
-    private final String email;
-    private final String password;
-    private final String salt;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "member_id")
+    private Long id;
+
+    @Column(unique = true, nullable = false)
+    private String email;
+
+    @Column(nullable = false)
+    private String password;
+
+    private String salt;
 
     public Member(Long id, String email, String password, String salt) {
         this.id = id;
         this.email = email;
         this.password = password;
         this.salt = salt;
+    }
+
+    public Member() {
     }
 
     public String getSalt() {
@@ -28,5 +42,11 @@ public class Member {
 
     public String getPassword() {
         return password;
+    }
+
+    public void update(String email, String password, String salt) {
+        this.email = email;
+        this.password = password;
+        this.salt = salt;
     }
 }
