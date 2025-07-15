@@ -35,7 +35,7 @@ public class ProductJpaRepository implements ProductRepository {
     public Product update(Long id, UpdateProductRequest request) {
         return jpaRepository.findById(id)
                 .map(product -> {
-                    product.create(request.name(), request.price(), request.imageUrl());
+                    product.update(request.name(), request.price(), request.imageUrl());
                     return product;
                 }).get();
     }

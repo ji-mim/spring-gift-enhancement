@@ -1,11 +1,13 @@
 package gift.service;
 
 import gift.config.UnAuthorizationException;
+import gift.domain.Member;
 import gift.domain.Product;
 import gift.domain.Wish;
 import gift.dto.*;
+import gift.repository.MemberRepository;
 import gift.repository.ProductRepository;
-import gift.repository.WishRepository;
+import gift.repository.WishJpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,48 +18,60 @@ import java.util.Optional;
 public class WishService {
 
     private final ProductRepository productRepository;
-    private final WishRepository wishRepository;
+    private final WishJpaRepository wishJpaRepository;
+    private final MemberRepository memberRepository;
 
-    public WishService(ProductRepository productRepository, WishRepository wishRestController) {
+    public WishService(ProductRepository productRepository, WishJpaRepository wishJpaRepository,
+            MemberRepository memberRepository) {
         this.productRepository = productRepository;
-        this.wishRepository = wishRestController;
+        this.wishJpaRepository = wishJpaRepository;
+        this.memberRepository = memberRepository;
     }
+
 
     public List<Product> productList() {
         return productRepository.findAll();
     }
 
     public CreateWishResponse addWishProduct(CreateWishRequest request, Long loginMemberId) {
-        Wish wish = wishRepository.save(request.productId(), loginMemberId, request.quantity());
-        return new CreateWishResponse(wish.getId(), wish.getMemberId(), wish.getProductId(), wish.getQuantity());
+        Member member = memberRepository.findById(loginMemberId).orElseThrow(() -> new NoSuchElementException("존재하지 않는 멤버입니다."));
+        Product product = productRepository.findById(request.productId()).orElseThrow(() -> new NoSuchElementException("존재하지 않는 상품입니다."));
+        Wish wish = wishJpaRepository.save(request.productId(), member, product, request.quantity());
+        return new CreateWishResponse(wish.getId(), wish.getMember().getId(), wish.getProduct().getId(), wish.getQuantity());
     }
 
-    public List<WishResponse> getMeberWishList(Long memberId) {
-        return wishRepository.findAllByMember(memberId);
+    public List<WishResponse> getMemberWishList(Long memberId) {
+        return wishJpaRepository.findAllByMember(memberId).stream()
+                .map(wish -> new WishResponse(
+                        wish.getId(),
+                        wish.getProduct().getName(),
+                        wish.getProduct().getPrice(),
+                        wish.getQuantity()
+                ))
+                .toList();
     }
-
     public void delete(Long wishId, Long memberId) {
         Wish wishProduct = findByIdOrThrow(wishId);
         checkAuthorization(wishProduct, memberId, "삭제 권한 없음");
-        wishRepository.delete(wishId);
+        wishJpaRepository.delete(wishId);
     }
 
     public UpdateWishResponse updateQuantity(UpdateWishRequest request, Long wishId, Long memberId) {
         Wish wishProduct = findByIdOrThrow(wishId);
         checkAuthorization(wishProduct, memberId, "수정 권한 없음");
 
-        wishRepository.update(request.quantity(), wishId);
-        return new UpdateWishResponse(wishProduct.getId(), wishProduct.getProductId(), request.quantity());
+        wishJpaRepository.update(request.quantity(), wishId);
+        return new UpdateWishResponse(wishProduct.getId(), wishProduct.getId(), request.quantity());
     }
 
     private static void checkAuthorization(Wish wishProduct, Long memberId, String exMessage) {
-        if (!wishProduct.getMemberId().equals(memberId)) {
+        if (!wishProduct.getMember().getId().equals(memberId)) {
             throw new UnAuthorizationException(exMessage);
         }
     }
 
     private Wish findByIdOrThrow(Long wishId) {
-        Optional<Wish> findWishProduct = wishRepository.findById(wishId);
+        Optional<Wish> findWishProduct = wishJpaRepository.findById(wishId);
         if (findWishProduct.isEmpty()) {
             throw new NoSuchElementException("존재하지 않는 위시리스트 상품");
         }
