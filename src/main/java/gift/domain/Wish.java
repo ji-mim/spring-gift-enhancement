@@ -6,7 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Wish {
@@ -16,12 +16,12 @@ public class Wish {
     @Column(name = "wish_id")
     private Long id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
