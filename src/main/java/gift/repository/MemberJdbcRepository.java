@@ -10,7 +10,7 @@ import javax.sql.DataSource;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
+//@Repository
 public class MemberJdbcRepository implements MemberRepository {
 
     private final JdbcClient client;

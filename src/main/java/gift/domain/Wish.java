@@ -1,16 +1,39 @@
 package gift.domain;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+
+@Entity
 public class Wish {
 
-    private final Long id;
-    private final Long memberId;
-    private final Long productId;
-    private final int quantity;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "wish_id")
+    private Long id;
 
-    public Wish(Long id, Long memberId, Long productId, int quantity) {
+    @ManyToOne
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
+
+
+    @ManyToOne
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
+
+    private int quantity;
+
+    public Wish() {
+    }
+
+    public Wish(Long id, Member member, Product product, int quantity) {
         this.id = id;
-        this.memberId = memberId;
-        this.productId = productId;
+        this.member = member;
+        this.product = product;
         this.quantity = quantity;
     }
 
@@ -18,15 +41,19 @@ public class Wish {
         return id;
     }
 
-    public Long getMemberId() {
-        return memberId;
+    public Member getMember() {
+        return member;
     }
 
-    public Long getProductId() {
-        return productId;
+    public Product getProduct() {
+        return product;
     }
 
     public int getQuantity() {
         return quantity;
+    }
+
+    public void update(int quantity) {
+        this.quantity = quantity;
     }
 }

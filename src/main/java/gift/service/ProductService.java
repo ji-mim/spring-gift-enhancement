@@ -5,7 +5,7 @@ import gift.dto.CreateProductRequest;
 import gift.dto.CreateProductResponse;
 import gift.dto.UpdateProductRequest;
 import gift.dto.UpdateProductResponse;
-import gift.repository.ProductRepository;
+import gift.repository.ProductJpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,14 +16,16 @@ import java.util.Optional;
 @Service
 public class ProductService {
 
-    private final ProductRepository repository;
+    private final ProductJpaRepository repository;
 
-    public ProductService(ProductRepository repository) {
+    public ProductService(ProductJpaRepository repository) {
         this.repository = repository;
     }
 
     public CreateProductResponse save(CreateProductRequest request) {
-        Product product = repository.save(request);
+        Product product = repository.save(
+                new Product(null, request.name(), request.price(), request.imageUrl()));
+
         return new CreateProductResponse(product.getId(), product.getName(), product.getPrice(), product.getImageUrl());
     }
 
@@ -38,13 +40,18 @@ public class ProductService {
 
     public UpdateProductResponse update(Long id, UpdateProductRequest request) {
         findIdOrThrow(id);
-        Product updateProduct = repository.update(id, request);
+        Product updateProduct = repository.findById(id)
+                .map(product -> {
+                    product.update(request.name(), request.price(), request.imageUrl());
+                    return product;
+                }).get();
+
         return new UpdateProductResponse(updateProduct.getId(), updateProduct.getName(), updateProduct.getPrice(), updateProduct.getImageUrl());
     }
 
     public void delete(Long id) {
         findIdOrThrow(id);
-        repository.delete(id);
+        repository.deleteById(id);
     }
 
     private void findIdOrThrow(Long id) {

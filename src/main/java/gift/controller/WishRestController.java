@@ -38,7 +38,7 @@ public class WishRestController {
 
     @GetMapping
     public HttpEntity<List<WishResponse>> getWishList(@Login LoginMember loginMember) {
-        List<WishResponse> wishList = service.getMeberWishList(loginMember.id());
+        List<WishResponse> wishList = service.getMemberWishList(loginMember.id());
         return new ResponseEntity<>(wishList, HttpStatus.OK);
     }
 

@@ -1,7 +1,7 @@
 package gift.login;
 
 import gift.domain.Member;
-import gift.repository.MemberRepository;
+import gift.repository.MemberJpaRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -16,9 +16,9 @@ import java.util.NoSuchElementException;
 @Component
 public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final MemberRepository memberRepository;
+    private final MemberJpaRepository memberRepository;
 
-    public LoginArgumentResolver(MemberRepository memberRepository) {
+    public LoginArgumentResolver(MemberJpaRepository memberRepository) {
         this.memberRepository = memberRepository;
     }
 

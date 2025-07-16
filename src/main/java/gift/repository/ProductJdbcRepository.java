@@ -12,7 +12,7 @@ import javax.sql.DataSource;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
+//@Repository
 public class ProductJdbcRepository implements ProductRepository {
 
     private final JdbcClient client;

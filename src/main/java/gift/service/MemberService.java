@@ -2,10 +2,8 @@ package gift.service;
 
 import gift.config.NotMatchPasswordException;
 import gift.domain.Member;
-import gift.domain.Product;
 import gift.dto.*;
-import gift.repository.MemberRepository;
-import gift.repository.ProductRepository;
+import gift.repository.MemberJpaRepository;
 import gift.util.ShaUtil;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -17,19 +15,18 @@ import java.util.Optional;
 @Service
 public class MemberService {
 
-    private final MemberRepository memberRepository;
-    private final ProductRepository productRepository;
+    private final MemberJpaRepository memberRepository;
 
-    public MemberService(MemberRepository repository, ProductRepository productRepository) {
-        this.memberRepository = repository;
-        this.productRepository = productRepository;
+    public MemberService(MemberJpaRepository memberRepository) {
+        this.memberRepository = memberRepository;
     }
+
 
     public CreateMemberResponse register(CreateMemberRequest request) {
         duplicateEmailCheck(request.email());
         String salt = ShaUtil.getSalt();
         String encryptPassword = ShaUtil.encrypt(request.password(), salt);
-        Member member = memberRepository.save(request.email(), encryptPassword, salt);
+        Member member = memberRepository.save(new Member(null, request.email(), encryptPassword, salt));
         return new CreateMemberResponse(member.getId(), member.getEmail());
     }
 
@@ -43,10 +40,6 @@ public class MemberService {
         if (!member.getPassword().equals(requestPassword)) {
             throw new NotMatchPasswordException("비밀번호가 일치하지 않습니다.");
         }
-    }
-
-    public List<Product> productList() {
-        return productRepository.findAll();
     }
 
     public List<Member> memberList() {
@@ -63,7 +56,12 @@ public class MemberService {
         duplicateEmailCheck(request.email());
         String salt = ShaUtil.getSalt();
         String encryptPassword = ShaUtil.encrypt(request.password(), salt);
-        Member updateMember = memberRepository.update(id, request.email(), encryptPassword, salt);
+        Member updateMember = memberRepository.findById(id)
+                .map(member -> {
+                    member.update(request.email(), encryptPassword, salt);
+                    return member;
+                }).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 멤버입니다."));
+
         return new UpdateMemberResponse(id, updateMember.getEmail(), updateMember.getPassword());
     }
 
@@ -81,6 +79,6 @@ public class MemberService {
     }
 
     public void delete(Long id) {
-        memberRepository.delete(id);
+        memberRepository.deleteById(id);
     }
 }
