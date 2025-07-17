@@ -8,9 +8,9 @@ import gift.dto.*;
 import gift.repository.MemberJpaRepository;
 import gift.repository.ProductJpaRepository;
 import gift.repository.WishJpaRepository;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -29,8 +29,8 @@ public class WishService {
     }
 
 
-    public List<Product> productList() {
-        return productRepository.findAll();
+    public PageResponse<Product> productList(Pageable pageable) {
+        return PageResponse.from(productRepository.findAll(pageable));
     }
 
     public CreateWishResponse addWishProduct(CreateWishRequest request, Long loginMemberId) {
@@ -40,16 +40,16 @@ public class WishService {
         return new CreateWishResponse(wish.getId(), wish.getMember().getId(), wish.getProduct().getId(), wish.getQuantity());
     }
 
-    public List<WishResponse> getMemberWishList(Long memberId) {
-        return wishJpaRepository.findByMemberId(memberId).stream()
+    public PageResponse<WishResponse> getMemberWishList(Long memberId, Pageable pageable) {
+        return PageResponse.from(wishJpaRepository.findByMemberId(memberId, pageable)
                 .map(wish -> new WishResponse(
                         wish.getId(),
                         wish.getProduct().getName(),
                         wish.getProduct().getPrice(),
                         wish.getQuantity()
-                ))
-                .toList();
+                )));
     }
+
     public void delete(Long wishId, Long memberId) {
         Wish wishProduct = findByIdOrThrow(wishId);
         checkAuthorization(wishProduct, memberId, "삭제 권한 없음");
