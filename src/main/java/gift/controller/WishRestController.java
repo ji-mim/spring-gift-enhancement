@@ -5,6 +5,7 @@ import gift.dto.*;
 import gift.login.Login;
 import gift.login.LoginMember;
 import gift.service.WishService;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,9 +25,9 @@ public class WishRestController {
     }
 
     @GetMapping("/products")
-    public HttpEntity<List<Product>> getProducts() {
-        List<Product> productList = service.productList();
-        return new ResponseEntity<>(productList, HttpStatus.OK);
+    public HttpEntity<PageResponse<Product>> getProducts(Pageable pageable){
+        PageResponse<Product> pagedProductList = service.productList(pageable);
+        return new ResponseEntity<>(pagedProductList, HttpStatus.OK);
     }
 
     @PostMapping()
@@ -37,9 +38,10 @@ public class WishRestController {
     }
 
     @GetMapping
-    public HttpEntity<List<WishResponse>> getWishList(@Login LoginMember loginMember) {
-        List<WishResponse> wishList = service.getMemberWishList(loginMember.id());
-        return new ResponseEntity<>(wishList, HttpStatus.OK);
+    public HttpEntity<PageResponse<WishResponse>> getWishList(@Login LoginMember loginMember, Pageable pageable) {
+        PageResponse<WishResponse> pagedMemberWishList = service.getMemberWishList(loginMember.id(),
+                pageable);
+        return new ResponseEntity<>(pagedMemberWishList, HttpStatus.OK);
     }
 
     @DeleteMapping("/{wishId}")

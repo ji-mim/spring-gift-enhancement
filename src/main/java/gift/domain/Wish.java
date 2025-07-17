@@ -56,4 +56,8 @@ public class Wish {
     public void update(int quantity) {
         this.quantity = quantity;
     }
+
+    public void addQuantity(int quantity) {
+        this.quantity += quantity;
+    }
 }
