@@ -27,7 +27,7 @@ class WishJpaRepositoryTest {
 
     @Test
     @DisplayName("위시에 상품 저장")
-    void save() {
+    void 위시_상품저장() {
         //when
         String password = "123";
         String salt = ShaUtil.getSalt();

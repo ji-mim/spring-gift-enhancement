@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class WishService {
@@ -33,9 +34,18 @@ public class WishService {
         return PageResponse.from(productRepository.findAll(pageable));
     }
 
+    @Transactional
     public CreateWishResponse addWishProduct(CreateWishRequest request, Long loginMemberId) {
         Member member = memberRepository.findById(loginMemberId).orElseThrow(() -> new NoSuchElementException("존재하지 않는 멤버입니다."));
         Product product = productRepository.findById(request.productId()).orElseThrow(() -> new NoSuchElementException("존재하지 않는 상품입니다."));
+
+        if (isPresent(member, product)) {
+            Wish presentWish = wishJpaRepository.findByMemberIdAndProductId(member.getId(), product.getId()).get();
+            presentWish.addQuantity(request.quantity());
+            return new CreateWishResponse(presentWish.getId(), presentWish.getMember().getId(),
+                    presentWish.getProduct().getId(),
+                    presentWish.getQuantity());
+        }
         Wish wish = wishJpaRepository.save(new Wish(null, member, product, request.quantity()));
         return new CreateWishResponse(wish.getId(), wish.getMember().getId(), wish.getProduct().getId(), wish.getQuantity());
     }
@@ -50,17 +60,24 @@ public class WishService {
                 )));
     }
 
+    @Transactional
     public void delete(Long wishId, Long memberId) {
         Wish wishProduct = findByIdOrThrow(wishId);
         checkAuthorization(wishProduct, memberId, "삭제 권한 없음");
         wishJpaRepository.deleteById(wishId);
     }
 
+    @Transactional
     public UpdateWishResponse updateQuantity(UpdateWishRequest request, Long wishId, Long memberId) {
         Wish wishProduct = findByIdOrThrow(wishId);
         checkAuthorization(wishProduct, memberId, "수정 권한 없음");
         wishProduct.update(request.quantity());
         return new UpdateWishResponse(wishProduct.getId(), wishProduct.getId(), request.quantity());
+    }
+
+    private boolean isPresent(Member member, Product product) {
+        return wishJpaRepository.findByMemberIdAndProductId(member.getId(), product.getId())
+                .isPresent();
     }
 
     private static void checkAuthorization(Wish wishProduct, Long memberId, String exMessage) {
