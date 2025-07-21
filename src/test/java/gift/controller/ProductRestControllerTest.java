@@ -1,10 +1,15 @@
 package gift.controller;
 
+import gift.dto.CreateOptionRequest;
 import gift.dto.CreateProductRequest;
 import gift.dto.CreateProductResponse;
 import gift.dto.UpdateProductRequest;
+import gift.repository.OptionJpaRepository;
+import gift.repository.ProductJpaRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
@@ -16,14 +21,24 @@ import org.springframework.web.client.RestClient;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@Sql(statements = "delete from product", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ProductRestControllerTest {
+
+    @Autowired
+    private OptionJpaRepository optionRepository;
+    @Autowired
+    private ProductJpaRepository productRepository;
 
     @LocalServerPort
     private int port;
 
     private RestClient client = RestClient.create();
+
+    @BeforeEach
+    void clear() {
+        optionRepository.deleteAll();
+        productRepository.deleteAll();
+    }
 
     @Test
     @DisplayName("상품 정상 등록")
@@ -86,7 +101,6 @@ class ProductRestControllerTest {
                 .toEntity(CreateProductResponse.class);
         Long id = response.getBody().id();
 
-
         url = "http://localhost:" + port + "/api/products/{id}";
         ResponseEntity<Void> findResponse = client.get()
                 .uri(url, id)
@@ -95,6 +109,7 @@ class ProductRestControllerTest {
 
         assertThat(findResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
+
     @Test
     @DisplayName("상품 조회 실패")
     void 상품_조회_실패() {
@@ -229,4 +244,44 @@ class ProductRestControllerTest {
         ).isInstanceOf(HttpClientErrorException.NotFound.class);
     }
 
+    @Test
+    @DisplayName("옵션 등록시 특수문자 검증(에러)")
+    void 옵션_등록_실패_특수문자() {
+        String url = "http://localhost:" + port + "/api/products";
+        ResponseEntity<CreateProductResponse> response = client.post()
+                .uri(url)
+                .body(new CreateProductRequest("product1", 1000, "exam.url"))
+                .retrieve()
+                .toEntity(CreateProductResponse.class);
+
+        assertThatThrownBy(() ->
+                client.post()
+                        .uri("http://localhost:" + port + "/api/products/{id}/options", 1)
+                        .body(new CreateOptionRequest("name*", 1000))
+                        .retrieve()
+                        .toBodilessEntity()
+        ).isInstanceOf(HttpClientErrorException.BadRequest.class);
+    }
+
+    @Test
+    @DisplayName("옵션 등록시 특수문자 검증(성공)")
+    void 옵션_등록_성공_특수문자() {
+        String url = "http://localhost:" + port + "/api/products";
+        ResponseEntity<CreateProductResponse> response = client.post()
+                .uri(url)
+                .body(new CreateProductRequest("product1", 1000, "exam.url"))
+                .retrieve()
+                .toEntity(CreateProductResponse.class);
+
+        Long id = response.getBody().id();
+
+        url = "http://localhost:" + port + "/api/products/{id}/options";
+        ResponseEntity<Void> findResponse = client.post()
+                .uri(url, id)
+                .body(new CreateOptionRequest("(name)", 1000))
+                .retrieve()
+                .toBodilessEntity();
+
+        assertThat(findResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+    }
 }

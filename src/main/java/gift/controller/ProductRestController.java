@@ -74,7 +74,7 @@ public class ProductRestController {
     @PostMapping("/{id}/options")
     public HttpEntity<CreateOptionResponse> createOption(
             @PathVariable Long id,
-            @RequestBody CreateOptionRequest request) {
+            @Validated @RequestBody CreateOptionRequest request) {
         Option savedOption = optionService.create(request.name(), request.quantity(), id);
 
         return new ResponseEntity<>(
