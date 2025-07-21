@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
+import java.util.List;
 
 public record CreateProductRequest(
         @NotBlank(message = "상품명은 필수입니다.")
@@ -17,7 +18,9 @@ public record CreateProductRequest(
         @NotNull(message = "가격은 필수입니다")
         Integer price,
         @NotBlank(message = "URL을 입력해야 합니다.")
-        String imageUrl) {
-
-
+        String imageUrl,
+        @Size(min = 1, message = "옵션은 하나 이상 등록해야 합니다.")
+        @NotNull(message = "옵션 목록은 필수입니다.")
+        List<CreateOptionRequest> options
+) {
 }

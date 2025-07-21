@@ -1,6 +1,8 @@
 package gift.domain;
 
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Product {
@@ -18,6 +20,9 @@ public class Product {
 
     @Column(nullable = false)
     private String imageUrl;
+
+    @OneToMany(mappedBy = "product" ,cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Option> options = new ArrayList<>();
 
     public Product(Long id, String name, int price, String imageUrl) {
         this.id = id;
@@ -49,5 +54,10 @@ public class Product {
         this.name = name;
         this.price = price;
         this.imageUrl = imageUrl;
+    }
+
+    public void addOption(Option option) {
+        option.setProduct(this); // 양방향 연관 설정
+        options.add(option);
     }
 }

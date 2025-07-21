@@ -1,5 +1,6 @@
 package gift.service;
 
+import gift.domain.Option;
 import gift.domain.Product;
 import gift.dto.CreateProductRequest;
 import gift.dto.CreateProductResponse;
@@ -25,6 +26,10 @@ public class ProductService {
     public CreateProductResponse save(CreateProductRequest request) {
         Product product = repository.save(
                 new Product(null, request.name(), request.price(), request.imageUrl()));
+        List<Option> options = request.options().stream()
+                .map(o -> new Option(null, o.name(), o.quantity(), product)).toList();
+
+        options.forEach(product::addOption);
 
         return new CreateProductResponse(product.getId(), product.getName(), product.getPrice(), product.getImageUrl());
     }

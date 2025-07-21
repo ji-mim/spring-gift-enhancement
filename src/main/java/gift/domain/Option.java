@@ -8,9 +8,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import java.util.regex.Pattern;
 
 @Entity
 public class Option {
+
 
     @Id @Column(name = "option_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,6 +28,8 @@ public class Option {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
+    private static final Pattern FORBIDDEN = Pattern.compile("[^a-zA-Z0-9가-힣()\\[\\]+\\-&/_]");
+
     public Option() {
     }
 
@@ -38,6 +42,8 @@ public class Option {
         this.product = product;
     }
 
+
+
     private void validateQuantity(int quantity) {
         if (quantity < 1 || quantity >= 100000000) {
             throw new IllegalArgumentException("옵션 수량은 최소 1개 이상 최대 1억개 미만입니다.");
@@ -48,6 +54,11 @@ public class Option {
         if (name.length() > 50) {
             throw new IllegalArgumentException("옵션 이름은 최대 50자까지 입력할 수 있습니다.");
         }
+
+        if (FORBIDDEN.matcher(name).find()) {
+            throw new IllegalArgumentException("옵션 이름에 허용되지 않는 특수문자가 포함되어 있습니다.");
+        }
+
     }
 
     public void subtractQuantity(int quantity) {
@@ -73,4 +84,7 @@ public class Option {
         return product;
     }
 
+    public void setProduct(Product product) {
+        this.product = product;
+    }
 }
