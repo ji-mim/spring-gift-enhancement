@@ -5,7 +5,6 @@ import static org.mockito.BDDMockito.given;
 
 import gift.domain.Option;
 import gift.domain.Product;
-import gift.dto.CreateOptionRequest;
 import gift.repository.OptionJpaRepository;
 import gift.repository.ProductJpaRepository;
 import java.util.List;
@@ -45,7 +44,7 @@ class OptionServiceTest {
         //when
         //then
         Assertions.assertThatNoException()
-                .isThrownBy(() -> optionService.create("", 1, productId));
+                .isThrownBy(() -> optionService.addOption("", 1, productId));
     }
 
     @ParameterizedTest
@@ -59,7 +58,7 @@ class OptionServiceTest {
         //when
         //then
         Assertions.assertThatIllegalArgumentException()
-                .isThrownBy(() -> optionService.create("a".repeat(count), 1, productId));
+                .isThrownBy(() -> optionService.addOption("a".repeat(count), 1, productId));
     }
 
     @Test
@@ -69,13 +68,10 @@ class OptionServiceTest {
         given(productRepository.findById(any()))
                 .willReturn(Optional.of(new Product(productId, "name", 1000, "image_url")));
 
-        CreateOptionRequest createOptionRequest = new CreateOptionRequest("*name", 1);
-
         //when
         //then
         Assertions.assertThatIllegalArgumentException()
-                .isThrownBy(() -> optionService.create(createOptionRequest.name(),
-                        createOptionRequest.quantity(), productId));
+                .isThrownBy(() -> optionService.addOption("*name", 1, productId));
     }
 
 
@@ -89,7 +85,7 @@ class OptionServiceTest {
         //when
         //then
         Assertions.assertThatIllegalArgumentException()
-                .isThrownBy(() -> optionService.create("", 100000000, productId));
+                .isThrownBy(() -> optionService.addOption("", 100000000, productId));
     }
 
     @Test
@@ -102,7 +98,7 @@ class OptionServiceTest {
         //when
         //then
         Assertions.assertThatIllegalArgumentException()
-                .isThrownBy(() -> optionService.create("", 0, productId));
+                .isThrownBy(() -> optionService.addOption("", 0, productId));
     }
 
     @Test
@@ -116,12 +112,12 @@ class OptionServiceTest {
         String duplicatedName = "name";
 
         Option option = new Option(1L, duplicatedName, 1, product);
-        given((optionRepository.findByProduct_Id(productId)))
+        given((optionRepository.findByProductId(productId)))
                 .willReturn(List.of(option));
         //when
         //then
         Assertions.assertThatIllegalArgumentException()
-                .isThrownBy(() -> optionService.create(duplicatedName, 1, productId));
+                .isThrownBy(() -> optionService.addOption(duplicatedName, 1, productId));
     }
 
     @Test

@@ -1,6 +1,7 @@
 package gift.controller;
 
 import gift.dto.*;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -63,7 +64,7 @@ class WishRestControllerTest {
         String url = "http://localhost:" + port + "/api/products";
         ResponseEntity<CreateProductResponse> productResponse = client.post()
                 .uri(url)
-                .body(new CreateProductRequest("product1", 1000, "exam.url"))
+                .body(new CreateProductRequest("product1", 1000, "exam.url", List.of(new CreateOptionRequest("옵션1", 10))))
                 .retrieve()
                 .toEntity(CreateProductResponse.class);
         assertThat(productResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -109,7 +110,7 @@ class WishRestControllerTest {
         String url = "http://localhost:" + port + "/api/products";
         ResponseEntity<CreateProductResponse> productResponse = client.post()
                 .uri(url)
-                .body(new CreateProductRequest("product1", 1000, "exam.url"))
+                .body(new CreateProductRequest("product1", 1000, "exam.url", List.of(new CreateOptionRequest("옵션1", 10))))
                 .retrieve()
                 .toEntity(CreateProductResponse.class);
         assertThat(productResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -154,7 +155,7 @@ class WishRestControllerTest {
         String url = "http://localhost:" + port + "/api/products";
         ResponseEntity<CreateProductResponse> productResponse = client.post()
                 .uri(url)
-                .body(new CreateProductRequest("product1", 1000, "exam.url"))
+                .body(new CreateProductRequest("product1", 1000, "exam.url", List.of(new CreateOptionRequest("옵션1", 10))))
                 .retrieve()
                 .toEntity(CreateProductResponse.class);
         assertThat(productResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -200,7 +201,7 @@ class WishRestControllerTest {
         String url = "http://localhost:" + port + "/api/products";
         ResponseEntity<CreateProductResponse> productResponse = client.post()
                 .uri(url)
-                .body(new CreateProductRequest("product1", 1000, "exam.url"))
+                .body(new CreateProductRequest("product1", 1000, "exam.url", List.of(new CreateOptionRequest("옵션1", 10))))
                 .retrieve()
                 .toEntity(CreateProductResponse.class);
         assertThat(productResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -251,7 +252,7 @@ class WishRestControllerTest {
         String url = "http://localhost:" + port + "/api/products";
         ResponseEntity<CreateProductResponse> productResponse = client.post()
                 .uri(url)
-                .body(new CreateProductRequest("product1", 1000, "exam.url"))
+                .body(new CreateProductRequest("product1", 1000, "exam.url", List.of(new CreateOptionRequest("옵션1", 10))))
                 .retrieve()
                 .toEntity(CreateProductResponse.class);
         assertThat(productResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -308,7 +309,7 @@ class WishRestControllerTest {
         String url = "http://localhost:" + port + "/api/products";
         ResponseEntity<CreateProductResponse> productResponse = client.post()
                 .uri(url)
-                .body(new CreateProductRequest("product1", 1000, "exam.url"))
+                .body(new CreateProductRequest("product1", 1000, "exam.url", List.of(new CreateOptionRequest("옵션1", 10))))
                 .retrieve()
                 .toEntity(CreateProductResponse.class);
         assertThat(productResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -360,7 +361,7 @@ class WishRestControllerTest {
         String url = "http://localhost:" + port + "/api/products";
         ResponseEntity<CreateProductResponse> productResponse = client.post()
                 .uri(url)
-                .body(new CreateProductRequest("product1", 1000, "exam.url"))
+                .body(new CreateProductRequest("product1", 1000, "exam.url", List.of(new CreateOptionRequest("옵션1", 10))))
                 .retrieve()
                 .toEntity(CreateProductResponse.class);
         assertThat(productResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -411,7 +412,7 @@ class WishRestControllerTest {
         String url = "http://localhost:" + port + "/api/products";
         ResponseEntity<CreateProductResponse> productResponse = client.post()
                 .uri(url)
-                .body(new CreateProductRequest("product1", 1000, "exam.url"))
+                .body(new CreateProductRequest("product1", 1000, "exam.url", List.of(new CreateOptionRequest("옵션1", 10))))
                 .retrieve()
                 .toEntity(CreateProductResponse.class);
         assertThat(productResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);

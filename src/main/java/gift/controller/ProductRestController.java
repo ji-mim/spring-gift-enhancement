@@ -75,7 +75,7 @@ public class ProductRestController {
     public HttpEntity<CreateOptionResponse> createOption(
             @PathVariable Long id,
             @Validated @RequestBody CreateOptionRequest request) {
-        Option savedOption = optionService.create(request.name(), request.quantity(), id);
+        Option savedOption = optionService.addOption(request.name(), request.quantity(), id);
 
         return new ResponseEntity<>(
                 new CreateOptionResponse(savedOption.getId(), savedOption.getName(), savedOption.getQuantity()), HttpStatus.CREATED);

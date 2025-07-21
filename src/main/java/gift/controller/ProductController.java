@@ -31,7 +31,7 @@ public class ProductController {
 
     @GetMapping("/add")
     public String addProduct(Model model) {
-        model.addAttribute("product", new CreateProductRequest("",null,""));
+        model.addAttribute("product", new CreateProductRequest("", null, "", List.of()));
         return "product/addForm";
     }
 

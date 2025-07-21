@@ -24,13 +24,13 @@ public class OptionService {
 
 
     @Transactional
-    public Option create(String name, int quantity, Long productId) {
+    public Option addOption(String name, int quantity, Long productId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 상품입니다."));
 
         Option option = new Option(null, name, quantity, product);
 
-        if (optionRepository.findByProduct_Id(productId).stream()
+        if (optionRepository.findByProductId(productId).stream()
                 .anyMatch(o -> o.getName().equals(name))) {
             throw new IllegalArgumentException("중복된 option은 추가될 수 없습니다.");
         }
@@ -38,7 +38,7 @@ public class OptionService {
     }
 
     public PageResponse<OptionResponse> findOptionsByProductId(Long productId, Pageable pageable) {
-        return PageResponse.from(optionRepository.findByProduct_Id(productId, pageable)
+        return PageResponse.from(optionRepository.findByProductId(productId, pageable)
                 .map(option -> new OptionResponse(
                         option.getId(),
                         option.getName(),

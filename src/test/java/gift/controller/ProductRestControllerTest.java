@@ -1,11 +1,13 @@
 package gift.controller;
 
+import gift.domain.Option;
 import gift.dto.CreateOptionRequest;
 import gift.dto.CreateProductRequest;
 import gift.dto.CreateProductResponse;
 import gift.dto.UpdateProductRequest;
 import gift.repository.OptionJpaRepository;
 import gift.repository.ProductJpaRepository;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,7 +16,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
@@ -46,7 +47,7 @@ class ProductRestControllerTest {
         String url = "http://localhost:" + port + "/api/products";
         ResponseEntity<CreateProductResponse> response = client.post()
                 .uri(url)
-                .body(new CreateProductRequest("product1", 1000, "exam.url"))
+                .body(new CreateProductRequest("product1", 1000, "exam.url", List.of(new CreateOptionRequest("옵션1", 10))))
                 .retrieve()
                 .toEntity(CreateProductResponse.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -59,20 +60,20 @@ class ProductRestControllerTest {
         assertThatThrownBy(() ->
                 client.post()
                         .uri(url)
-                        .body(new CreateProductRequest("", 1000, "exam.url"))
+                        .body(new CreateProductRequest("", 1000, "exam.url", List.of(new CreateOptionRequest("옵션1", 10))))
                         .retrieve()
                         .toEntity(CreateProductResponse.class)
         ).isInstanceOf(HttpClientErrorException.BadRequest.class);
     }
 
     @Test
-    @DisplayName("상품 정상 실패(가격 음수")
+    @DisplayName("상품 정상 실패(가격 음수)")
     void 상품_정상_실패_가격음수() {
         String url = "http://localhost:" + port + "/api/products";
         assertThatThrownBy(() ->
                 client.post()
                         .uri(url)
-                        .body(new CreateProductRequest("", -200, "exam.url"))
+                        .body(new CreateProductRequest("product1", -1000, "exam.url", List.of(new CreateOptionRequest("옵션1", 10))))
                         .retrieve()
                         .toEntity(CreateProductResponse.class)
         ).isInstanceOf(HttpClientErrorException.BadRequest.class);
@@ -96,7 +97,7 @@ class ProductRestControllerTest {
         String url = "http://localhost:" + port + "/api/products";
         ResponseEntity<CreateProductResponse> response = client.post()
                 .uri(url)
-                .body(new CreateProductRequest("product1", 1000, "exam.url"))
+                .body(new CreateProductRequest("product1", 1000, "exam.url", List.of(new CreateOptionRequest("옵션1", 10))))
                 .retrieve()
                 .toEntity(CreateProductResponse.class);
         Long id = response.getBody().id();
@@ -116,7 +117,7 @@ class ProductRestControllerTest {
         String url = "http://localhost:" + port + "/api/products";
         ResponseEntity<CreateProductResponse> response = client.post()
                 .uri(url)
-                .body(new CreateProductRequest("product1", 1000, "exam.url"))
+                .body(new CreateProductRequest("product1", 1000, "exam.url", List.of(new CreateOptionRequest("옵션1", 10))))
                 .retrieve()
                 .toEntity(CreateProductResponse.class);
 
@@ -134,7 +135,7 @@ class ProductRestControllerTest {
         String url = "http://localhost:" + port + "/api/products";
         ResponseEntity<CreateProductResponse> response = client.post()
                 .uri(url)
-                .body(new CreateProductRequest("product1", 1000, "exam.url"))
+                .body(new CreateProductRequest("product1", 1000, "exam.url", List.of(new CreateOptionRequest("옵션1", 10))))
                 .retrieve()
                 .toEntity(CreateProductResponse.class);
         Long id = response.getBody().id();
@@ -155,7 +156,7 @@ class ProductRestControllerTest {
         String url = "http://localhost:" + port + "/api/products";
         ResponseEntity<CreateProductResponse> response = client.post()
                 .uri(url)
-                .body(new CreateProductRequest("product1", 1000, "exam.url"))
+                .body(new CreateProductRequest("product1", 1000, "exam.url", List.of(new CreateOptionRequest("옵션1", 10))))
                 .retrieve()
                 .toEntity(CreateProductResponse.class);
 
@@ -174,7 +175,7 @@ class ProductRestControllerTest {
         String url = "http://localhost:" + port + "/api/products";
         ResponseEntity<CreateProductResponse> response = client.post()
                 .uri(url)
-                .body(new CreateProductRequest("product1", 1000, "exam.url"))
+                .body(new CreateProductRequest("product1", 1000, "exam.url", List.of(new CreateOptionRequest("옵션1", 10))))
                 .retrieve()
                 .toEntity(CreateProductResponse.class);
 
@@ -193,7 +194,7 @@ class ProductRestControllerTest {
         String url = "http://localhost:" + port + "/api/products";
         ResponseEntity<CreateProductResponse> response = client.post()
                 .uri(url)
-                .body(new CreateProductRequest("product1", 1000, "exam.url"))
+                .body(new CreateProductRequest("product1", 1000, "exam.url", List.of(new CreateOptionRequest("옵션1", 10))))
                 .retrieve()
                 .toEntity(CreateProductResponse.class);
 
@@ -212,7 +213,7 @@ class ProductRestControllerTest {
         String url = "http://localhost:" + port + "/api/products";
         ResponseEntity<CreateProductResponse> response = client.post()
                 .uri(url)
-                .body(new CreateProductRequest("product1", 1000, "exam.url"))
+                .body(new CreateProductRequest("product1", 1000, "exam.url", List.of(new CreateOptionRequest("옵션1", 10))))
                 .retrieve()
                 .toEntity(CreateProductResponse.class);
         Long id = response.getBody().id();
@@ -232,7 +233,7 @@ class ProductRestControllerTest {
         String url = "http://localhost:" + port + "/api/products";
         ResponseEntity<CreateProductResponse> response = client.post()
                 .uri(url)
-                .body(new CreateProductRequest("product1", 1000, "exam.url"))
+                .body(new CreateProductRequest("product1", 1000, "exam.url", List.of(new CreateOptionRequest("옵션1", 10))))
                 .retrieve()
                 .toEntity(CreateProductResponse.class);
 
@@ -250,7 +251,7 @@ class ProductRestControllerTest {
         String url = "http://localhost:" + port + "/api/products";
         ResponseEntity<CreateProductResponse> response = client.post()
                 .uri(url)
-                .body(new CreateProductRequest("product1", 1000, "exam.url"))
+                .body(new CreateProductRequest("product1", 1000, "exam.url", List.of(new CreateOptionRequest("옵션1", 10))))
                 .retrieve()
                 .toEntity(CreateProductResponse.class);
 
@@ -269,7 +270,7 @@ class ProductRestControllerTest {
         String url = "http://localhost:" + port + "/api/products";
         ResponseEntity<CreateProductResponse> response = client.post()
                 .uri(url)
-                .body(new CreateProductRequest("product1", 1000, "exam.url"))
+                .body(new CreateProductRequest("product1", 1000, "exam.url", List.of(new CreateOptionRequest("옵션1", 10))))
                 .retrieve()
                 .toEntity(CreateProductResponse.class);
 

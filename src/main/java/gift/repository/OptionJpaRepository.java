@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface OptionJpaRepository extends JpaRepository<Option, Long> {
 
-    List<Option> findByProduct_Id(Long productId);
+    List<Option> findByProductId(Long productId);
 
-    Page<Option> findByProduct_Id(Long productId, Pageable pageable);
+    Page<Option> findByProductId(Long productId, Pageable pageable);
 }
