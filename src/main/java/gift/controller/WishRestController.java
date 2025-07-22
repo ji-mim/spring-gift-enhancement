@@ -6,6 +6,7 @@ import gift.login.Login;
 import gift.login.LoginMember;
 import gift.service.WishService;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,8 @@ public class WishRestController {
     }
 
     @GetMapping("/products")
-    public HttpEntity<PageResponse<Product>> getProducts(Pageable pageable){
+    public HttpEntity<PageResponse<Product>> getProducts(
+            @PageableDefault(page = 0, size = 5, sort = "id")Pageable pageable){
         PageResponse<Product> pagedProductList = service.productList(pageable);
         return new ResponseEntity<>(pagedProductList, HttpStatus.OK);
     }
@@ -38,7 +40,7 @@ public class WishRestController {
     }
 
     @GetMapping
-    public HttpEntity<PageResponse<WishResponse>> getWishList(@Login LoginMember loginMember, Pageable pageable) {
+    public HttpEntity<PageResponse<WishResponse>> getWishList(@Login LoginMember loginMember, @PageableDefault(page = 0 , size = 5, sort = "id") Pageable pageable) {
         PageResponse<WishResponse> pagedMemberWishList = service.getMemberWishList(loginMember.id(),
                 pageable);
         return new ResponseEntity<>(pagedMemberWishList, HttpStatus.OK);
